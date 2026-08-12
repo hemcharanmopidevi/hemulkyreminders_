@@ -230,10 +230,16 @@
                 <span id="statusText" class="text-[10px] text-white/40 font-semibold uppercase tracking-wider">No reminder set</span>
             </div>
 
-            <button id="setReminderBtn" class="w-full h-11 bg-gradient-to-b from-green-500 to-green-700 hover:from-green-400 hover:to-green-600 border border-green-400/30 text-white text-xs font-bold rounded-xl shadow-[0_0_20px_rgba(46,125,50,0.45)] flex justify-center items-center transition-all active:scale-[0.98] overflow-hidden">
-                <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>Set Reminder</span>
-            </button>
+            <div class="flex items-center gap-2">
+                <button id="testReminderBtn" type="button"
+                        class="h-11 px-4 rounded-xl bg-white/5 hover:bg-white/12 border border-white/10 text-white/80 text-xs font-bold transition active:scale-[0.98]">
+                    Test
+                </button>
+                <button id="setReminderBtn" class="flex-1 h-11 bg-gradient-to-b from-green-500 to-green-700 hover:from-green-400 hover:to-green-600 border border-green-400/30 text-white text-xs font-bold rounded-xl shadow-[0_0_20px_rgba(46,125,50,0.45)] flex justify-center items-center transition-all active:scale-[0.98] overflow-hidden">
+                    <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>Set Reminder</span>
+                </button>
+            </div>
         </div>
 
     </div>
@@ -254,12 +260,21 @@
         const btnAM = document.getElementById('btnAM');
         const btnPM = document.getElementById('btnPM');
         const setReminderBtn = document.getElementById('setReminderBtn');
+        const testReminderBtn = document.getElementById('testReminderBtn');
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
         const toggleListBtn = document.getElementById('toggleListBtn');
         const mainScheduleView = document.getElementById('mainScheduleView');
         const remindersListView = document.getElementById('remindersListView');
         const remindersContainer = document.getElementById('remindersContainer');
+
+        function currentReminderPreview() {
+            return {
+                message: messageInput.value.trim() || 'Reminder!',
+                suit: currentSuit,
+                id: 'test-' + Date.now().toString()
+            };
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             ipcRenderer.send('get-reminders');
@@ -326,6 +341,13 @@
                 remindersListView.classList.add('hidden');
                 mainScheduleView.classList.remove('hidden');
             }
+        });
+
+        testReminderBtn.addEventListener('click', () => {
+            ipcRenderer.send('trigger-test-drop', currentReminderPreview());
+            setTimeout(() => {
+                ipcRenderer.send('close-popover');
+            }, 150);
         });
 
         setReminderBtn.addEventListener('click', () => {
