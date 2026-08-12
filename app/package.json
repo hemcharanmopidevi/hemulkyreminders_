@@ -20,6 +20,10 @@
       "identity": null,
       "hardenedRuntime": false,
       "gatekeeperAssess": false,
+      "icon": "assets/icon.png",
+      "extendInfo": {
+        "LSUIElement": true
+      },
       "target": [
         "dmg",
         "zip"
@@ -38,6 +42,7 @@
     "files": [
       "main.js",
       "src/**/*",
+      "assets/**/*",
       "index.html"
     ]
   },

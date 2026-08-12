@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, ipcMain, screen, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, Menu, ipcMain, screen, nativeImage, Notification } = require('electron');
 const path = require('path');
 
 let tray = null;
@@ -8,21 +8,55 @@ let overlayWindow = null;
 let reminders = [];
 let activeTimers = {};
 
+function showReminderNotification(message, options = {}) {
+    if (!Notification.isSupported()) {
+        console.warn('System notifications are not supported on this device.');
+        return;
+    }
+
+    const body = (message || 'Reminder!').toString().trim() || 'Reminder!';
+    const notification = new Notification({
+        title: options.title || 'Hemulky',
+        body,
+        silent: false,
+        urgency: 'critical'
+    });
+
+    notification.on('click', () => {
+        showPopover();
+    });
+
+    notification.show();
+}
+
 function createTrayIcon() {
-    const svgString = `<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="9" cy="9" r="7.5" fill="#000000"/>
-        <ellipse cx="9" cy="8" rx="4.2" ry="3.8" fill="#FFFFFF"/>
-        <path d="M5.5 11.5 Q9 14.5 12.5 11.5" stroke="#FFFFFF" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-        <circle cx="7.2" cy="7.5" r="0.7" fill="#000000"/>
-        <circle cx="10.8" cy="7.5" r="0.7" fill="#000000"/>
+    // Prefer the green Hulk logo PNG so the menu-bar icon is obviously colored (not monochrome).
+    const fs = require('fs');
+    const iconPath = path.join(__dirname, 'assets', 'trayIcon.png');
+
+    try {
+        if (fs.existsSync(iconPath)) {
+            const icon = nativeImage.createFromPath(iconPath);
+            if (!icon.isEmpty()) {
+                // Do NOT setTemplateImage — we want a bright green Hulk, not a gray glyph.
+                return icon.resize({ width: 22, height: 22 });
+            }
+        }
+    } catch (err) {
+        console.warn('Could not load tray PNG, falling back to SVG:', err.message);
+    }
+
+    const svgString = `<svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="21" fill="#2E7D32"/>
+        <circle cx="22" cy="22" r="18" fill="#66BB6A"/>
+        <ellipse cx="22" cy="20" rx="12" ry="11" fill="#1B5E20"/>
+        <circle cx="16" cy="18" r="2.2" fill="#C8E6C9"/>
+        <circle cx="28" cy="18" r="2.2" fill="#C8E6C9"/>
+        <path d="M14 26 Q22 33 30 26" stroke="#C8E6C9" stroke-width="2.4" fill="none" stroke-linecap="round"/>
     </svg>`;
 
     const base64Svg = Buffer.from(svgString).toString('base64');
-    const dataUrl = `data:image/svg+xml;base64,${base64Svg}`;
-
-    const icon = nativeImage.createFromDataURL(dataUrl);
-    icon.setTemplateImage(true);
-    return icon;
+    return nativeImage.createFromDataURL(`data:image/svg+xml;base64,${base64Svg}`);
 }
 
 function createTray() {
@@ -30,6 +64,7 @@ function createTray() {
         const icon = createTrayIcon();
         tray = new Tray(icon);
         tray.setToolTip('Hemulky Reminder - Click to open');
+        tray.setIgnoreDoubleClickEvents(true);
 
         const bounds = tray.getBounds();
         console.log('Hemulky Menu Bar Tray created at position:', bounds);
@@ -157,6 +192,8 @@ function triggerDrop(reminderData) {
         ? { message: reminderData, id: Date.now().toString(), suit: 'classic' }
         : reminderData;
 
+    showReminderNotification(data.message, { title: 'Hemulky Reminder' });
+
     overlayWindow.show();
     overlayWindow.focus();
     overlayWindow.webContents.send('start-drop', data);
@@ -260,6 +297,13 @@ ipcMain.on('schedule-reminder', (event, reminder) => {
     reminders.push(reminderObj);
     scheduleTimer(reminderObj);
 
+    const whenLabel = reminderObj.type === 'interval'
+        ? `every ${reminderObj.time}m`
+        : `at ${reminderObj.time}`;
+    showReminderNotification(`Set: ${reminderObj.message} (${whenLabel})`, {
+        title: 'Hemulky — Reminder scheduled'
+    });
+
     if (popoverWindow) {
         popoverWindow.webContents.send('reminders-updated', reminders);
     }
@@ -301,14 +345,27 @@ function scheduleTimer(reminder) {
 }
 
 app.whenReady().then(() => {
+    if (process.platform === 'darwin' && app.dock) {
+        app.dock.hide();
+    }
+
     createTray();
     createPopoverWindow();
     createOverlayWindow();
+
+    // Open controls once on launch so it's obvious Hemulky started.
+    setTimeout(() => {
+        showPopover();
+        showReminderNotification('Click the green Hulk icon in the menu bar anytime.', {
+            title: 'Hemulky is ready'
+        });
+    }, 600);
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createPopoverWindow();
         }
+        showPopover();
     });
 });
 
