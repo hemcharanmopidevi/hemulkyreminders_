@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hemulky — Satisfying reminders with every smash</title>
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#070b08',
+                        panel: '#0f1812',
+                        hulk: '#3DDC64',
+                        deep: '#1B5E20',
+                        bruise: '#7B1FA2',
+                    },
+                    fontFamily: {
+                        display: ['"Bebas Neue"', 'sans-serif'],
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --ink: #070b08;
+            --panel: #0f1812;
+            --hulk: #3DDC64;
+            --deep: #1B5E20;
+            --bruise: #7B1FA2;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: #e8f5e9;
+            font-family: Outfit, sans-serif;
+            background:
+                radial-gradient(ellipse 70% 55% at 85% 15%, rgba(61, 220, 100, 0.16), transparent 55%),
+                radial-gradient(ellipse 50% 40% at 10% 80%, rgba(123, 31, 162, 0.14), transparent 50%),
+                linear-gradient(165deg, #070b08 0%, #0c1410 45%, #061008 100%);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .brand {
+            font-family: "Bebas Neue", sans-serif;
+            letter-spacing: 0.04em;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            align-items: center;
+            min-height: calc(100vh - 88px);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 1.5rem 3rem;
+        }
+
+        @media (min-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1.05fr 0.95fr;
+                gap: 1rem;
+                padding: 1rem 2rem 2.5rem;
+            }
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            min-height: 320px;
+        }
+
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            inset: 12% 8% 0;
+            background: radial-gradient(circle at 50% 70%, rgba(61, 220, 100, 0.35), transparent 62%);
+            filter: blur(28px);
+            z-index: 0;
+        }
+
+        .hero-visual img {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 520px);
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.65));
+            animation: smashIn 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes smashIn {
+            0% { opacity: 0; transform: translateY(-48px) scale(0.9); }
+            65% { opacity: 1; transform: translateY(10px) scale(1.03); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .rise {
+            animation: riseIn 0.7s ease-out both;
+        }
+
+        .rise-delay {
+            animation: riseIn 0.7s ease-out 0.12s both;
+        }
+
+        .cta-mac {
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.12);
+        }
+        .cta-mac:hover { background: #1a1a1a; }
+
+        .cta-win {
+            background: linear-gradient(180deg, #4AE06B 0%, #1B9E3E 100%);
+            box-shadow: 0 12px 30px rgba(61, 220, 100, 0.25);
+            border: 1px solid rgba(180, 255, 190, 0.35);
+        }
+        .cta-win:hover { filter: brightness(1.06); }
+
+        .mockup-shell {
+            background:
+                radial-gradient(circle at 50% 100%, rgba(61, 220, 100, 0.22), transparent 55%),
+                #0a120e;
+            border: 1px solid rgba(61, 220, 100, 0.15);
+        }
+
+        .glass-card {
+            background: rgba(12, 22, 16, 0.85);
+            backdrop-filter: blur(28px);
+            border: 1px solid rgba(61, 220, 100, 0.22);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45), 0 0 40px rgba(61, 220, 100, 0.08);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="w-full px-6 sm:px-8 py-5 flex justify-between items-center relative z-50">
+        <a href="index.html" class="flex items-center space-x-3">
+            <img src="images/logo.png" alt="" class="w-10 h-10 rounded-xl object-cover border border-hulk/30 shadow-lg shadow-green-900/40">
+            <span class="brand text-3xl text-white leading-none">Hemulky</span>
+        </a>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+            <a href="manual.html" class="text-sm font-semibold text-white/60 hover:text-hulk transition hidden sm:inline">Manual</a>
+            <a href="HemulkyReminder-Mac.zip" download="HemulkyReminder-Mac.zip"
+               onclick="va('event', 'Download Mac Clicked');"
+               class="cta-mac flex items-center text-white text-sm font-bold px-3.5 py-2 rounded-full transition">
+                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.37 7.648c-.114.088-2.11 1.213-2.11 3.715 0 2.894 2.54 3.918 2.616 3.944-.011.062-.403 1.402-1.34 2.767-.834 1.201-1.706 2.4-3.032 2.4s-1.667-.77-3.198-.77c-1.492 0-2.022.796-3.235.796-1.214 0-2.06-1.112-3.033-2.477C4.911 16.42 4 13.93 4 11.566c0-3.791 2.465-5.802 4.891-5.802 1.29 0 2.364.847 3.173.847.77 0 1.972-.897 3.438-.897.556 0 2.553.05 3.867 1.934Zm-4.564-3.54c.607-.719 1.036-1.718 1.036-2.716 0-.138-.012-.279-.037-.392-.987.037-2.161.657-2.87 1.478-.555.632-1.074 1.63-1.074 2.643 0 .152.026.304.037.353.063.011.164.025.266.025.885 0 1.998-.593 2.642-1.39Z"/></svg>
+                Mac
+            </a>
+            <a href="HemulkyReminder-Setup.exe" download="HemulkyReminder-Setup.exe"
+               onclick="va('event', 'Download Windows Clicked');"
+               class="cta-win flex items-center text-ink text-sm font-bold px-3.5 py-2 rounded-full transition">
+                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 5.5L10.5 4.4v7.1H3V5.5zm0 13L10.5 19.6v-7.1H3v6zm8.2-13.2L21 3v8.5h-9.8V5.3zM12.2 19.8L21 21v-8.5h-9.8v7.3z"/></svg>
+                Windows
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero: one composition — brand, headline, line, CTAs, dominant Hulk -->
+    <section class="hero-grid">
+        <div class="rise text-center md:text-left order-2 md:order-1">
+            <p class="brand text-6xl sm:text-7xl md:text-8xl text-white mb-4 leading-none">Hemulky</p>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white/95 mb-4 max-w-xl mx-auto md:mx-0">
+                Satisfying reminders with every <span class="text-hulk">smash</span>
+            </h1>
+            <p class="rise-delay text-base sm:text-lg text-white/55 font-medium mb-8 max-w-md mx-auto md:mx-0">
+                Hemulky drops onto your screen exactly when you need a nudge.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 justify-center md:justify-start">
+                <a href="HemulkyReminder-Mac.zip" download="HemulkyReminder-Mac.zip"
+                   onclick="va('event', 'Download Mac Clicked');"
+                   class="cta-mac inline-flex items-center justify-center text-white text-base font-bold px-6 py-3.5 rounded-2xl transition">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M19.37 7.648c-.114.088-2.11 1.213-2.11 3.715 0 2.894 2.54 3.918 2.616 3.944-.011.062-.403 1.402-1.34 2.767-.834 1.201-1.706 2.4-3.032 2.4s-1.667-.77-3.198-.77c-1.492 0-2.022.796-3.235.796-1.214 0-2.06-1.112-3.033-2.477C4.911 16.42 4 13.93 4 11.566c0-3.791 2.465-5.802 4.891-5.802 1.29 0 2.364.847 3.173.847.77 0 1.972-.897 3.438-.897.556 0 2.553.05 3.867 1.934Zm-4.564-3.54c.607-.719 1.036-1.718 1.036-2.716 0-.138-.012-.279-.037-.392-.987.037-2.161.657-2.87 1.478-.555.632-1.074 1.63-1.074 2.643 0 .152.026.304.037.353.063.011.164.025.266.025.885 0 1.998-.593 2.642-1.39Z"/></svg>
+                    Download for Mac
+                </a>
+                <a href="HemulkyReminder-Setup.exe" download="HemulkyReminder-Setup.exe"
+                   onclick="va('event', 'Download Windows Clicked');"
+                   class="cta-win inline-flex items-center justify-center text-ink text-base font-bold px-6 py-3.5 rounded-2xl transition">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M3 5.5L10.5 4.4v7.1H3V5.5zm0 13L10.5 19.6v-7.1H3v6zm8.2-13.2L21 3v8.5h-9.8V5.3zM12.2 19.8L21 21v-8.5h-9.8v7.3z"/></svg>
+                    Download for Windows
+                </a>
+            </div>
+            <p class="mt-4 text-xs font-semibold uppercase tracking-widest text-white/35">Free · macOS 12+ &amp; Windows 10+</p>
+        </div>
+
+        <div class="hero-visual order-1 md:order-2">
+            <img src="images/hulk-coming-down.png" alt="Hemulky">
+        </div>
+    </section>
+
+    <!-- App preview -->
+    <section class="px-6 pb-20">
+        <div class="mockup-shell max-w-5xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] min-h-[480px] relative overflow-hidden flex items-center justify-center p-8">
+            <div class="glass-card w-full max-w-sm rounded-3xl p-5">
+                <h3 class="text-white font-bold tracking-wide">Hulk Reminder</h3>
+                <p class="text-[11px] font-medium text-white/45 mb-4">Set a time, Hemulky does the rest.</p>
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-4"></div>
+                <label class="block text-[10px] font-bold text-white/35 mb-1.5 uppercase tracking-widest">Message</label>
+                <div class="w-full bg-black/45 border border-white/10 rounded-xl px-3 py-2.5 mb-4">
+                    <span class="text-sm font-medium text-white/90">Time to drink water! 💧</span>
+                </div>
+                <label class="block text-[10px] font-bold text-white/35 mb-1.5 uppercase tracking-widest">Schedule</label>
+                <div class="flex bg-black/40 rounded-xl p-1 mb-3 border border-white/5">
+                    <div class="flex-1 bg-hulk/20 text-hulk text-xs font-semibold text-center py-1.5 rounded-lg border border-hulk/30">At Time</div>
+                    <div class="flex-1 text-white/35 text-xs font-semibold text-center py-1.5">Repeat</div>
+                </div>
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex space-x-2 items-center">
+                        <div class="bg-black/50 border border-white/10 rounded-lg w-12 h-11 flex items-center justify-center font-mono text-lg font-semibold">08</div>
+                        <span class="text-white/30 font-bold">:</span>
+                        <div class="bg-black/50 border border-white/10 rounded-lg w-12 h-11 flex items-center justify-center font-mono text-lg font-semibold">00</div>
+                    </div>
+                    <div class="flex flex-col bg-black/50 border border-white/10 rounded-lg overflow-hidden text-[10px] font-bold">
+                        <div class="bg-white/15 px-2.5 py-1 text-center">AM</div>
+                        <div class="text-white/30 px-2.5 py-1 text-center">PM</div>
+                    </div>
+                </div>
+                <button class="w-full cta-win text-ink text-sm font-bold py-2.5 rounded-xl flex justify-center items-center">
+                    Set Reminder
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="w-full px-6 pb-20">
+        <h2 class="brand text-5xl sm:text-6xl text-center text-white mb-12">How to use it</h2>
+        <div class="flex flex-col sm:flex-row max-w-4xl mx-auto gap-10 sm:gap-6 justify-between">
+            <div class="flex flex-col items-center text-center flex-1">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 border border-hulk/30 text-hulk flex items-center justify-center text-xl font-bold mb-5">1</div>
+                <h3 class="text-lg font-bold text-white mb-2">Install</h3>
+                <p class="text-white/45 text-sm font-medium leading-relaxed max-w-[200px]">Download for Mac or Windows and open from the menu bar or tray.</p>
+            </div>
+            <div class="flex flex-col items-center text-center flex-1">
+                <div class="w-12 h-12 rounded-2xl bg-white/5 border border-hulk/30 text-hulk flex items-center justify-center text-xl font-bold mb-5">2</div>
+                <h3 class="text-lg font-bold text-white mb-2">Set Reminder</h3>
+                <p class="text-white/45 text-sm font-medium leading-relaxed max-w-[200px]">Type your message and pick the exact time.</p>
+            </div>
+            <div class="flex flex-col items-center text-center flex-1">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-b from-hulk to-deep text-ink flex items-center justify-center text-xl font-bold mb-5 shadow-lg shadow-green-900/40">3</div>
+                <h3 class="text-lg font-bold text-white mb-2">Smash</h3>
+                <p class="text-white/45 text-sm font-medium leading-relaxed max-w-[200px]">Hemulky hits your screen when it’s time.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="w-full max-w-3xl mx-auto px-6 pb-16 space-y-4">
+        <div class="rounded-2xl p-6 border border-hulk/25 bg-hulk/5">
+            <h4 class="text-base font-bold text-white mb-3">Mac install (avoid “malware” block)</h4>
+            <ol class="text-sm text-white/65 leading-relaxed space-y-2 list-decimal list-inside">
+                <li>Download <strong class="text-white">HemulkyReminder-Mac.zip</strong> and unzip it.</li>
+                <li><strong class="text-white">Right-click</strong> <code class="text-hulk bg-white/10 px-1 rounded">Install Hemulky.command</code> → <strong class="text-white">Open</strong> → Open.</li>
+                <li>Do <strong class="text-white">not</strong> double-click the .app first — the installer clears macOS quarantine for you.</li>
+                <li>Hemulky appears in the <strong class="text-white">menu bar</strong> (top right).</li>
+            </ol>
+            <p class="text-xs text-white/40 mt-3">Without an Apple Developer certificate, macOS may still warn once on the installer script — choose Open. That is normal for local apps.</p>
+        </div>
+        <div class="rounded-2xl p-6 border border-hulk/20 bg-white/[0.03] flex flex-col sm:flex-row gap-5 items-start">
+            <div class="w-11 h-11 rounded-full bg-hulk/15 text-hulk flex items-center justify-center flex-shrink-0 border border-hulk/25">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
+            <div>
+                <h4 class="text-base font-bold text-white mb-2">Still blocked?</h4>
+                <p class="text-sm text-white/55 leading-relaxed mb-2">Restore from Trash, then run in Terminal:</p>
+                <pre class="text-xs text-hulk bg-black/40 border border-white/10 rounded-lg p-3 overflow-x-auto">xattr -cr /Applications/HemulkyReminder.app
+open /Applications/HemulkyReminder.app</pre>
+                <p class="text-sm text-white/55 leading-relaxed mt-2"><strong class="text-white/80">Windows:</strong> SmartScreen → More info → Run anyway.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="w-full flex flex-col items-center justify-center gap-2 pt-8 pb-16">
+        <p class="brand text-4xl text-white">Hemulky</p>
+        <p class="text-sm text-white/40 font-medium">Satisfying reminders with every smash.</p>
+    </footer>
+
+</body>
+</html>

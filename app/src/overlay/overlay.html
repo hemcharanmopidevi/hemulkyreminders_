@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hemulky Overlay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #impactCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hulk-wrapper {
+            position: absolute;
+            top: -500px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .hulk-body {
+            transform-origin: center bottom;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hulk-body.landed {
+            animation: smashSettle 0.45s ease-out;
+        }
+
+        @keyframes smashSettle {
+            0% { transform: scaleY(0.82) scaleX(1.12); }
+            55% { transform: scaleY(1.08) scaleX(0.94); }
+            100% { transform: scaleY(1) scaleX(1); }
+        }
+
+        .hemulky-reminder-card {
+            background: rgba(18, 24, 18, 0.95);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(76, 175, 80, 0.25);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65), 0 0 35px rgba(46, 125, 50, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            width: 340px;
+        }
+
+        .esc-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body id="overlayBody">
+
+    <canvas id="impactCanvas"></canvas>
+
+    <div id="hulkWrapper" class="hulk-wrapper">
+        <div id="hulkBody" class="hulk-body">
+
+            <div id="hulkGraphic" class="relative w-36 h-48 mb-2 filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]">
+                <svg id="hulkSvg" class="w-full h-full" viewBox="0 0 140 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Hair -->
+                    <path id="hulkHair" d="M48 78 Q70 52 92 78 Q88 68 70 66 Q52 68 48 78 Z" fill="#1b5e20"/>
+                    <!-- Head -->
+                    <ellipse id="suitHead" cx="70" cy="92" rx="24" ry="22" fill="#4CAF50"/>
+                    <!-- Eyes -->
+                    <ellipse cx="60" cy="90" rx="5" ry="4" fill="#ffffff"/>
+                    <ellipse cx="80" cy="90" rx="5" ry="4" fill="#ffffff"/>
+                    <circle cx="61" cy="91" r="2" fill="#111111"/>
+                    <circle cx="81" cy="91" r="2" fill="#111111"/>
+                    <!-- Angry brow -->
+                    <path d="M52 82 L68 86" stroke="#1b5e20" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M88 82 L72 86" stroke="#1b5e20" stroke-width="3" stroke-linecap="round"/>
+                    <!-- Mouth -->
+                    <path d="M60 102 Q70 108 80 102" stroke="#1b5e20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                    <!-- Torso -->
+                    <path id="suitBody" d="M42 118 C42 112 52 108 70 108 C88 108 98 112 98 118 L102 148 C102 158 88 164 70 164 C52 164 38 158 38 148 Z" fill="#4CAF50"/>
+                    <!-- Purple pants -->
+                    <path id="suitPants" d="M42 148 L98 148 L100 172 C88 176 52 176 40 172 Z" fill="#6A1B9A"/>
+                    <!-- Arms raised for smash -->
+                    <path id="suitArmL" d="M44 122 C20 110 12 78 28 58" stroke="#4CAF50" stroke-width="14" stroke-linecap="round"/>
+                    <path id="suitArmR" d="M96 122 C120 110 128 78 112 58" stroke="#4CAF50" stroke-width="14" stroke-linecap="round"/>
+                    <!-- Fists -->
+                    <circle id="fistL" cx="28" cy="54" r="10" fill="#66BB6A"/>
+                    <circle id="fistR" cx="112" cy="54" r="10" fill="#66BB6A"/>
+                    <!-- Legs -->
+                    <path id="suitBootL" d="M52 168 C48 178 42 186 48 188" stroke="#6A1B9A" stroke-width="12" stroke-linecap="round"/>
+                    <path id="suitBootR" d="M88 168 C92 178 98 186 92 188" stroke="#6A1B9A" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <div class="hemulky-reminder-card p-5 text-white flex flex-col pointer-events-auto shadow-2xl">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-green-400">Hemulky Reminder</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="esc-badge text-[10px] font-mono font-bold text-white/80 px-2 py-0.5 rounded">ESC</span>
+                        <span class="text-[10px] text-white/40 font-medium">to close</span>
+                    </div>
+                </div>
+
+                <div class="my-2 bg-black/40 border border-white/10 rounded-xl p-3.5 shadow-inner">
+                    <p id="cardMessage" class="text-base font-bold text-white/95 leading-snug">Time to drink water! 💧</p>
+                    <p id="cardTime" class="text-[11px] font-medium text-white/40 mt-1">Triggered just now</p>
+                </div>
+
+                <div class="flex space-x-2 mt-3">
+                    <button id="btnDone" class="flex-1 bg-gradient-to-r from-green-700 to-green-500 hover:from-green-600 hover:to-green-400 text-white text-xs font-bold py-2.5 rounded-xl shadow-lg shadow-green-900/40 transition transform active:scale-95">
+                        ✓ Done
+                    </button>
+                    <button id="btnSnooze" class="flex-1 bg-white/10 hover:bg-white/20 border border-white/10 text-white/80 text-xs font-bold py-2.5 rounded-xl transition transform active:scale-95">
+                        ⏰ Snooze 5m
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        const hulkWrapper = document.getElementById('hulkWrapper');
+        const hulkBody = document.getElementById('hulkBody');
+        const hulkGraphic = document.getElementById('hulkGraphic');
+        const cardMessage = document.getElementById('cardMessage');
+        const cardTime = document.getElementById('cardTime');
+        const canvas = document.getElementById('impactCanvas');
+        const ctx = canvas.getContext('2d');
+        const overlayBody = document.getElementById('overlayBody');
+
+        const suitHead = document.getElementById('suitHead');
+        const suitBody = document.getElementById('suitBody');
+        const suitPants = document.getElementById('suitPants');
+        const suitArmL = document.getElementById('suitArmL');
+        const suitArmR = document.getElementById('suitArmR');
+        const suitBootL = document.getElementById('suitBootL');
+        const suitBootR = document.getElementById('suitBootR');
+        const fistL = document.getElementById('fistL');
+        const fistR = document.getElementById('fistR');
+        const hulkHair = document.getElementById('hulkHair');
+
+        let impactColor = 'rgba(76, 175, 80, 0.55)';
+
+        function applySuitColors(suit) {
+            if (suit === 'gray') {
+                suitHead.setAttribute('fill', '#9E9E9E');
+                suitBody.setAttribute('fill', '#757575');
+                suitPants.setAttribute('fill', '#4A148C');
+                suitArmL.setAttribute('stroke', '#9E9E9E');
+                suitArmR.setAttribute('stroke', '#9E9E9E');
+                suitBootL.setAttribute('stroke', '#4A148C');
+                suitBootR.setAttribute('stroke', '#4A148C');
+                fistL.setAttribute('fill', '#BDBDBD');
+                fistR.setAttribute('fill', '#BDBDBD');
+                hulkHair.setAttribute('fill', '#424242');
+                impactColor = 'rgba(158, 158, 158, 0.5)';
+            } else if (suit === 'professor') {
+                suitHead.setAttribute('fill', '#66BB6A');
+                suitBody.setAttribute('fill', '#43A047');
+                suitPants.setAttribute('fill', '#6A1B9A');
+                suitArmL.setAttribute('stroke', '#66BB6A');
+                suitArmR.setAttribute('stroke', '#66BB6A');
+                suitBootL.setAttribute('stroke', '#6A1B9A');
+                suitBootR.setAttribute('stroke', '#6A1B9A');
+                fistL.setAttribute('fill', '#81C784');
+                fistR.setAttribute('fill', '#81C784');
+                hulkHair.setAttribute('fill', '#1565C0');
+                impactColor = 'rgba(106, 27, 154, 0.45)';
+            } else if (suit === 'smash') {
+                suitHead.setAttribute('fill', '#00C853');
+                suitBody.setAttribute('fill', '#00E676');
+                suitPants.setAttribute('fill', '#4A148C');
+                suitArmL.setAttribute('stroke', '#00C853');
+                suitArmR.setAttribute('stroke', '#00C853');
+                suitBootL.setAttribute('stroke', '#4A148C');
+                suitBootR.setAttribute('stroke', '#4A148C');
+                fistL.setAttribute('fill', '#69F0AE');
+                fistR.setAttribute('fill', '#69F0AE');
+                hulkHair.setAttribute('fill', '#1B5E20');
+                impactColor = 'rgba(0, 230, 118, 0.55)';
+            } else {
+                suitHead.setAttribute('fill', '#4CAF50');
+                suitBody.setAttribute('fill', '#4CAF50');
+                suitPants.setAttribute('fill', '#6A1B9A');
+                suitArmL.setAttribute('stroke', '#4CAF50');
+                suitArmR.setAttribute('stroke', '#4CAF50');
+                suitBootL.setAttribute('stroke', '#6A1B9A');
+                suitBootR.setAttribute('stroke', '#6A1B9A');
+                fistL.setAttribute('fill', '#66BB6A');
+                fistR.setAttribute('fill', '#66BB6A');
+                hulkHair.setAttribute('fill', '#1B5E20');
+                impactColor = 'rgba(76, 175, 80, 0.55)';
+            }
+        }
+
+        let isDropping = false;
+        let animationFrame = null;
+        let impactRings = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function playSmashSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioCtx();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.28);
+                gain.gain.setValueAtTime(0.45, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.28);
+
+                osc2.type = 'sawtooth';
+                osc2.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc2.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.12);
+                gain2.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.start();
+                osc2.stop(audioCtx.currentTime + 0.12);
+            } catch (e) {}
+        }
+
+        function spawnImpact() {
+            const rect = hulkGraphic.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.bottom - 8;
+            impactRings = [
+                { x: cx, y: cy, r: 8, alpha: 0.7, width: 4 },
+                { x: cx, y: cy, r: 4, alpha: 0.5, width: 2 }
+            ];
+        }
+
+        function drawImpact() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            impactRings = impactRings.filter(ring => ring.alpha > 0.02);
+            impactRings.forEach(ring => {
+                ctx.beginPath();
+                ctx.arc(ring.x, ring.y, ring.r, 0, Math.PI * 2);
+                ctx.strokeStyle = impactColor.replace(/[\d.]+\)$/, `${ring.alpha})`);
+                ctx.lineWidth = ring.width;
+                ctx.stroke();
+                ring.r += 6;
+                ring.alpha *= 0.88;
+                ring.width *= 0.95;
+            });
+            if (impactRings.length) {
+                requestAnimationFrame(drawImpact);
+            }
+        }
+
+        function triggerDropAnimation(data) {
+            if (data.suit) {
+                applySuitColors(data.suit);
+            }
+
+            cardMessage.textContent = data.message || 'Time to drink water! 💧';
+            cardTime.textContent = 'Triggered at ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            hulkBody.classList.remove('landed');
+            const targetY = 50;
+            let currentY = -450;
+            let velocity = 0;
+            const gravity = 2.4;
+            const bounce = -0.32;
+            let hasSmashed = false;
+
+            isDropping = true;
+
+            function animate() {
+                if (!isDropping) return;
+                velocity += gravity;
+                currentY += velocity;
+
+                if (currentY >= targetY) {
+                    currentY = targetY;
+                    if (!hasSmashed) {
+                        hasSmashed = true;
+                        playSmashSound();
+                        spawnImpact();
+                        drawImpact();
+                        hulkBody.classList.add('landed');
+                    }
+                    velocity *= bounce;
+                    if (Math.abs(velocity) < 1.2) {
+                        currentY = targetY;
+                        hulkWrapper.style.top = currentY + 'px';
+                        return;
+                    }
+                }
+
+                hulkWrapper.style.top = currentY + 'px';
+                animationFrame = requestAnimationFrame(animate);
+            }
+
+            cancelAnimationFrame(animationFrame);
+            animate();
+        }
+
+        function retractHulk() {
+            if (!isDropping) return;
+            isDropping = false;
+            hulkBody.classList.remove('landed');
+
+            let currentY = parseInt(hulkWrapper.style.top) || 50;
+            function animateRetract() {
+                currentY -= 36;
+                hulkWrapper.style.top = currentY + 'px';
+
+                if (currentY > -500) {
+                    requestAnimationFrame(animateRetract);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ipcRenderer.send('dismiss-overlay');
+                }
+            }
+
+            animateRetract();
+        }
+
+        let currentReminderData = null;
+
+        ipcRenderer.on('start-drop', (event, data) => {
+            currentReminderData = data;
+            triggerDropAnimation(data);
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                retractHulk();
+            }
+        });
+
+        overlayBody.addEventListener('click', (e) => {
+            if (e.target === overlayBody || e.target === canvas) {
+                retractHulk();
+            }
+        });
+
+        document.getElementById('btnDone').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentReminderData) {
+                ipcRenderer.send('complete-reminder', currentReminderData);
+            }
+            retractHulk();
+        });
+
+        document.getElementById('btnSnooze').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentReminderData) {
+                ipcRenderer.send('snooze-reminder', currentReminderData);
+            }
+            retractHulk();
+        });
+    </script>
+</body>
+</html>

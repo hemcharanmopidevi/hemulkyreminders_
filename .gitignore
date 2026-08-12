@@ -1,0 +1,22 @@
+.DS_Store
+**/.DS_Store
+
+# Dependencies & build output
+app/node_modules/
+app/dist/
+app/dist-*/
+
+# Large installers (host via GitHub Releases)
+*.dmg
+*.exe
+*.zip
+!package-lock.json
+
+# Local Electron runtime copies
+app/.electron-runtime/
+
+# Oversized source assets
+website/images/hulk-source.png
+
+# Logs
+*.log

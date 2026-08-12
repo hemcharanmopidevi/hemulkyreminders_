@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hemulky Controls</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background-color: transparent !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hemulky-card {
+            background: rgba(18, 24, 18, 0.96);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            border-radius: 24px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tab-btn.active {
+            background-color: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .suit-btn.selected {
+            background-color: rgba(76, 175, 80, 0.28) !important;
+            border-color: rgba(76, 175, 80, 0.7) !important;
+            color: #ffffff !important;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .list-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .list-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .time-box {
+            background: rgba(0, 0, 0, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            width: 48px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .time-box:hover {
+            border-color: rgba(76, 175, 80, 0.7);
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .time-select {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background: transparent !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+            font-size: 1.125rem !important;
+            font-weight: 700 !important;
+            width: 100% !important;
+            height: 100% !important;
+            text-align: center !important;
+            text-align-last: center !important;
+            outline: none !important;
+            cursor: pointer !important;
+            position: relative;
+            z-index: 10;
+        }
+
+        .time-select::-ms-expand {
+            display: none;
+        }
+    </style>
+</head>
+<body class="p-0">
+
+    <div class="hemulky-card p-5 flex flex-col justify-between text-white relative">
+
+        <div>
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-green-700 to-green-500 flex items-center justify-center shadow-lg shadow-green-900/40 border border-green-400/30">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="10" r="5"/>
+                            <path d="M7 16c0-2.5 2.2-4 5-4s5 1.5 5 4v3H7v-3z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold leading-tight text-base tracking-wide">Hulk Reminder</h3>
+                        <p class="text-[11px] font-medium text-white/50">Set a time, Hemulky does the rest.</p>
+                    </div>
+                </div>
+
+                <button id="toggleListBtn" title="Active Reminders" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 transition border border-white/10">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+
+            <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-3"></div>
+
+            <div class="mb-3">
+                <label class="block text-[10px] font-bold text-white/40 mb-1 uppercase tracking-widest">Message</label>
+                <div class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 flex items-center focus-within:border-green-500/60 transition shadow-inner">
+                    <input type="text" id="reminderMessage" value="Time to drink water! 💧"
+                           class="w-full bg-transparent text-xs font-medium text-white placeholder-white/30 focus:outline-none"
+                           placeholder="Type your reminder...">
+                </div>
+
+                <div class="flex space-x-1.5 mt-2 overflow-x-auto no-scrollbar pb-0.5">
+                    <button class="preset-chip text-[10px] bg-white/5 hover:bg-white/15 px-2.5 py-1 rounded-lg text-white/80 whitespace-nowrap transition border border-white/5" data-msg="Time to drink water! 💧">💧 Water</button>
+                    <button class="preset-chip text-[10px] bg-white/5 hover:bg-white/15 px-2.5 py-1 rounded-lg text-white/80 whitespace-nowrap transition border border-white/5" data-msg="Rest your eyes (20-20-20 rule) 👁️">👁️ Eye Rest</button>
+                    <button class="preset-chip text-[10px] bg-white/5 hover:bg-white/15 px-2.5 py-1 rounded-lg text-white/80 whitespace-nowrap transition border border-white/5" data-msg="Stand up and stretch! 🧘">🧘 Stretch</button>
+                    <button class="preset-chip text-[10px] bg-white/5 hover:bg-white/15 px-2.5 py-1 rounded-lg text-white/80 whitespace-nowrap transition border border-white/5" data-msg="Posture check! 🚶">🚶 Posture</button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="block text-[10px] font-bold text-white/40 mb-1 uppercase tracking-widest">Hulk Look</label>
+                <div class="grid grid-cols-4 gap-1">
+                    <button class="suit-btn selected text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg text-white/70 text-center transition" data-suit="classic">💚 Classic</button>
+                    <button class="suit-btn text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg text-white/70 text-center transition" data-suit="gray">🩶 Gray</button>
+                    <button class="suit-btn text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg text-white/70 text-center transition" data-suit="professor">🧠 Prof</button>
+                    <button class="suit-btn text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded-lg text-white/70 text-center transition" data-suit="smash">💥 Smash</button>
+                </div>
+            </div>
+
+            <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-3"></div>
+
+            <div id="mainScheduleView">
+                <label class="block text-[10px] font-bold text-white/40 mb-1 uppercase tracking-widest">Schedule</label>
+
+                <div class="flex bg-black/40 rounded-xl p-1 mb-3 border border-white/5 shadow-inner">
+                    <button id="tabTime" class="tab-btn flex-1 active text-white/60 text-[11px] font-semibold text-center py-1 rounded-lg transition">At Time</button>
+                    <button id="tabInterval" class="tab-btn flex-1 text-white/60 text-[11px] font-semibold text-center py-1 rounded-lg transition">Repeat Every</button>
+                </div>
+
+                <div id="timeInputs" class="flex items-center space-x-3 mb-3">
+                    <div class="flex space-x-2 items-center">
+                        <div class="time-box">
+                            <select id="hourSelect" class="time-select">
+                                <option value="01" class="bg-zinc-900 text-white">01</option>
+                                <option value="02" class="bg-zinc-900 text-white">02</option>
+                                <option value="03" class="bg-zinc-900 text-white">03</option>
+                                <option value="04" class="bg-zinc-900 text-white">04</option>
+                                <option value="05" class="bg-zinc-900 text-white">05</option>
+                                <option value="06" class="bg-zinc-900 text-white">06</option>
+                                <option value="07" class="bg-zinc-900 text-white">07</option>
+                                <option value="08" selected class="bg-zinc-900 text-white">08</option>
+                                <option value="09" class="bg-zinc-900 text-white">09</option>
+                                <option value="10" class="bg-zinc-900 text-white">10</option>
+                                <option value="11" class="bg-zinc-900 text-white">11</option>
+                                <option value="12" class="bg-zinc-900 text-white">12</option>
+                            </select>
+                            <div class="absolute bottom-0 w-full h-1/2 bg-white/5 z-0 pointer-events-none"></div>
+                        </div>
+
+                        <span class="text-white/30 font-bold self-center text-lg leading-none">:</span>
+
+                        <div class="time-box">
+                            <select id="minSelect" class="time-select">
+                                <option value="00" selected class="bg-zinc-900 text-white">00</option>
+                                <option value="15" class="bg-zinc-900 text-white">15</option>
+                                <option value="30" class="bg-zinc-900 text-white">30</option>
+                                <option value="45" class="bg-zinc-900 text-white">45</option>
+                            </select>
+                            <div class="absolute bottom-0 w-full h-1/2 bg-white/5 z-0 pointer-events-none"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col bg-black/50 border border-white/10 rounded-lg overflow-hidden text-[10px] font-bold shadow-inner h-11 w-11">
+                        <button id="btnAM" class="ampm-btn flex-1 bg-white/20 text-white flex items-center justify-center transition">AM</button>
+                        <button id="btnPM" class="ampm-btn flex-1 text-white/30 hover:bg-white/10 flex items-center justify-center transition">PM</button>
+                    </div>
+                </div>
+
+                <div id="intervalInputs" class="hidden mb-3">
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button class="interval-chip bg-white/5 hover:bg-white/15 py-2 rounded-xl text-[11px] font-bold text-white border border-white/5" data-mins="15">15m</button>
+                        <button class="interval-chip bg-white/5 hover:bg-white/15 py-2 rounded-xl text-[11px] font-bold text-white border border-white/5" data-mins="30">30m</button>
+                        <button class="interval-chip bg-white/5 hover:bg-white/15 py-2 rounded-xl text-[11px] font-bold text-white border border-white/5" data-mins="45">45m</button>
+                        <button class="interval-chip bg-white/5 hover:bg-white/15 py-2 rounded-xl text-[11px] font-bold text-white border border-white/5" data-mins="60">1h</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="remindersListView" class="hidden h-[160px] overflow-y-auto list-scrollbar pr-1">
+                <label class="block text-[10px] font-bold text-white/40 mb-2 uppercase tracking-widest">Active Reminders</label>
+                <div id="remindersContainer" class="space-y-2">
+                    <p class="text-xs text-white/40 text-center py-6">No active reminders set.</p>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex items-center justify-center space-x-2 mb-2.5">
+                <div id="statusDot" class="w-2 h-2 rounded-full bg-gray-500"></div>
+                <span id="statusText" class="text-[10px] text-white/40 font-semibold uppercase tracking-wider">No reminder set</span>
+            </div>
+
+            <button id="setReminderBtn" class="w-full h-11 bg-gradient-to-b from-green-500 to-green-700 hover:from-green-400 hover:to-green-600 border border-green-400/30 text-white text-xs font-bold rounded-xl shadow-[0_0_20px_rgba(46,125,50,0.45)] flex justify-center items-center transition-all active:scale-[0.98] overflow-hidden">
+                <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>Set Reminder</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        let scheduleType = 'time';
+        let ampm = 'AM';
+        let selectedInterval = 30;
+        let currentSuit = 'classic';
+
+        const messageInput = document.getElementById('reminderMessage');
+        const tabTime = document.getElementById('tabTime');
+        const tabInterval = document.getElementById('tabInterval');
+        const timeInputs = document.getElementById('timeInputs');
+        const intervalInputs = document.getElementById('intervalInputs');
+        const btnAM = document.getElementById('btnAM');
+        const btnPM = document.getElementById('btnPM');
+        const setReminderBtn = document.getElementById('setReminderBtn');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const toggleListBtn = document.getElementById('toggleListBtn');
+        const mainScheduleView = document.getElementById('mainScheduleView');
+        const remindersListView = document.getElementById('remindersListView');
+        const remindersContainer = document.getElementById('remindersContainer');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            ipcRenderer.send('get-reminders');
+        });
+
+        document.querySelectorAll('.suit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.suit-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                currentSuit = btn.getAttribute('data-suit');
+            });
+        });
+
+        document.querySelectorAll('.preset-chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                messageInput.value = btn.getAttribute('data-msg');
+            });
+        });
+
+        tabTime.addEventListener('click', () => {
+            scheduleType = 'time';
+            tabTime.classList.add('active');
+            tabInterval.classList.remove('active');
+            timeInputs.classList.remove('hidden');
+            intervalInputs.classList.add('hidden');
+        });
+
+        tabInterval.addEventListener('click', () => {
+            scheduleType = 'interval';
+            tabInterval.classList.add('active');
+            tabTime.classList.remove('active');
+            intervalInputs.classList.remove('hidden');
+            timeInputs.classList.add('hidden');
+        });
+
+        btnAM.addEventListener('click', () => {
+            ampm = 'AM';
+            btnAM.className = 'ampm-btn flex-1 bg-white/20 text-white flex items-center justify-center transition';
+            btnPM.className = 'ampm-btn flex-1 text-white/30 hover:bg-white/10 flex items-center justify-center transition';
+        });
+
+        btnPM.addEventListener('click', () => {
+            ampm = 'PM';
+            btnPM.className = 'ampm-btn flex-1 bg-white/20 text-white flex items-center justify-center transition';
+            btnAM.className = 'ampm-btn flex-1 text-white/30 hover:bg-white/10 flex items-center justify-center transition';
+        });
+
+        document.querySelectorAll('.interval-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.interval-chip').forEach(c => c.classList.remove('bg-green-600', 'border-green-400'));
+                chip.classList.add('bg-green-600', 'border-green-400');
+                selectedInterval = parseInt(chip.getAttribute('data-mins'));
+            });
+        });
+
+        let showList = false;
+        toggleListBtn.addEventListener('click', () => {
+            showList = !showList;
+            if (showList) {
+                mainScheduleView.classList.add('hidden');
+                remindersListView.classList.remove('hidden');
+                ipcRenderer.send('get-reminders');
+            } else {
+                remindersListView.classList.add('hidden');
+                mainScheduleView.classList.remove('hidden');
+            }
+        });
+
+        setReminderBtn.addEventListener('click', () => {
+            const msg = messageInput.value.trim() || 'Reminder!';
+            let timeStr = '';
+
+            if (scheduleType === 'time') {
+                const hr = document.getElementById('hourSelect').value;
+                const min = document.getElementById('minSelect').value;
+                timeStr = `${hr}:${min} ${ampm}`;
+            } else {
+                timeStr = `${selectedInterval}`;
+            }
+
+            ipcRenderer.send('schedule-reminder', {
+                message: msg,
+                type: scheduleType,
+                time: timeStr,
+                suit: currentSuit
+            });
+
+            setTimeout(() => {
+                ipcRenderer.send('close-popover');
+            }, 300);
+        });
+
+        ipcRenderer.on('reminders-updated', (event, reminders) => {
+            if (!reminders || reminders.length === 0) {
+                remindersContainer.innerHTML = '<p class="text-xs text-white/40 text-center py-6">No active reminders set.</p>';
+                statusDot.className = 'w-2 h-2 rounded-full bg-gray-500';
+                statusText.textContent = 'No reminder set';
+                statusText.className = 'text-[10px] text-white/40 font-semibold uppercase tracking-wider';
+                return;
+            }
+
+            const latest = reminders[reminders.length - 1];
+            statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+            statusText.textContent = latest.type === 'time' ? `Set for ${latest.time}` : `Repeats every ${latest.time}m`;
+            statusText.className = 'text-[10px] text-emerald-300 font-semibold uppercase tracking-wider';
+
+            remindersContainer.innerHTML = reminders.map(r => `
+                <div class="bg-black/40 border border-white/5 rounded-xl p-2.5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-white/90">${r.message}</p>
+                        <p class="text-[10px] text-white/40 font-medium">${r.type === 'time' ? 'At ' + r.time : 'Every ' + r.time + ' mins'}</p>
+                    </div>
+                    <button onclick="deleteReminder('${r.id}')" class="text-red-400/80 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/5 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        });
+
+        function deleteReminder(id) {
+            ipcRenderer.send('delete-reminder', id);
+        }
+    </script>
+</body>
+</html>

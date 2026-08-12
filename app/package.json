@@ -1,0 +1,58 @@
+{
+  "name": "hemulky-reminder",
+  "version": "1.0.0",
+  "description": "Satisfying reminders with every smash - Hemulky macOS & Windows Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder -mw",
+    "package:mac-safe": "npm run build:mac && node scripts/package-mac-safe.js"
+  },
+  "build": {
+    "appId": "com.hemulky.reminder",
+    "productName": "HemulkyReminder",
+    "afterPack": "./scripts/afterPack.js",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "dmg": {
+      "title": "HemulkyReminder",
+      "writeUpdateInfo": false
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "files": [
+      "main.js",
+      "src/**/*",
+      "index.html"
+    ]
+  },
+  "keywords": [
+    "reminder",
+    "hulk",
+    "hemulky",
+    "macOS",
+    "windows",
+    "timer"
+  ],
+  "author": "Hemulky Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}
