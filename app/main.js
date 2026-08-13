@@ -100,6 +100,7 @@ function createPopoverWindow() {
         backgroundColor: '#00000000',
         hasShadow: false,
         alwaysOnTop: true,
+        skipTaskbar: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
@@ -132,15 +133,30 @@ function showPopover(bounds) {
     if (bounds) {
         const popoverBounds = popoverWindow.getBounds();
         const primaryDisplay = screen.getPrimaryDisplay();
-        const { width: screenWidth } = primaryDisplay.workAreaSize;
+        const { x: workX, y: workY, width: workWidth, height: workHeight } = primaryDisplay.workArea;
+        const screenHeight = primaryDisplay.bounds.height;
 
         let x = Math.round(bounds.x + (bounds.width / 2) - (popoverBounds.width / 2));
-        let y = Math.round(bounds.y + bounds.height + 4);
 
-        if (x + popoverBounds.width > screenWidth) {
-            x = screenWidth - popoverBounds.width - 10;
+        // macOS menu bar is at top → open below icon.
+        // Windows taskbar is usually at bottom → open above icon.
+        const trayNearBottom = bounds.y > screenHeight / 2;
+        let y;
+        if (trayNearBottom || process.platform === 'win32') {
+            y = Math.round(bounds.y - popoverBounds.height - 8);
+        } else {
+            y = Math.round(bounds.y + bounds.height + 4);
         }
-        if (x < 10) x = 10;
+
+        // Keep fully inside the usable work area
+        if (x + popoverBounds.width > workX + workWidth) {
+            x = workX + workWidth - popoverBounds.width - 10;
+        }
+        if (x < workX + 10) x = workX + 10;
+        if (y < workY + 10) y = workY + 10;
+        if (y + popoverBounds.height > workY + workHeight) {
+            y = workY + workHeight - popoverBounds.height - 10;
+        }
 
         popoverWindow.setPosition(x, y, false);
     }
