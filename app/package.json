@@ -37,7 +37,8 @@
       "target": [
         "nsis",
         "portable"
-      ]
+      ],
+      "icon": "assets/icon.png"
     },
     "files": [
       "main.js",
